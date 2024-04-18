@@ -1,17 +1,25 @@
-import generateFitness from "./generate-fitness";
+import generateFitness from "./generate-fitness.js";
 
 export function selection(population, countToBeSelected, objectiveFunction) {
-  const fitnessScores = population.map((individual) =>
-    generateFitness(objectiveFunction, individual)
+  const fitnessScores = population.map(x => generateFitness(objectiveFunction,x))
+
+  const adjustmentFactor = Math.abs(Math.min(...fitnessScores));
+
+  const adjustedFitnessScores = population.map((individual) =>
+    generateFitness(objectiveFunction, individual) + adjustmentFactor
   );
-  const totalFitnessScore = fitnessScores.reduce(
+
+  
+  const totalFitnessScore = adjustedFitnessScores.reduce(
     (total, current) => total + current,
     0
   );
 
-  const fitnessProbabilities = fitnessScores.map(
+
+  const fitnessProbabilities = adjustedFitnessScores.map(
     (fitnessScore) => fitnessScore / totalFitnessScore
   );
+
 
   let probabilitySum = 0;
 
@@ -19,6 +27,8 @@ export function selection(population, countToBeSelected, objectiveFunction) {
     probabilitySum = probabilitySum + probability;
     return probabilitySum;
   });
+
+
 
   //   Perform Roulette Wheel Selection
 
